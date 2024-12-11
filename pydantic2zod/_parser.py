@@ -320,10 +320,16 @@ class _ParseModule(_Parse[cst.Module]):
 
     def _is_pydantic_model(self, cls: ClassDecl) -> bool:
         for b in cls.base_classes:
+            imported = self._is_imported(b)
             if self._is_imported(b) in [
                 "pydantic.BaseModel",
                 "pydantic.generics.GenericModel",
             ]:
+                return True
+
+            if isinstance(imported, str) and imported.startswith(
+                "client.supabase.models"
+            ):
                 return True
 
         # TODO(povilas): when the base is imported model, it COULD be pydantic model
